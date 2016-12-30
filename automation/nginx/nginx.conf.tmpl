@@ -31,8 +31,6 @@ http {
     ssl_certificate /etc/nginx/certs/${SSL_CERTIFICATE};
     ssl_certificate_key /etc/nginx/certs/${SSL_CERTIFICATE_KEY};
 
-    set $web http://${WEB_HOST};
-
     server {
         listen       ${HTTP_PORT};
         return 301 https://$host$request_uri;
@@ -43,7 +41,7 @@ http {
         server_name  ${ALLOWED_HOSTS};
 
         location / {
-            proxy_pass $web:${GHOST_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${GHOST_PORT};
         }
     }
 
@@ -52,7 +50,7 @@ http {
         server_name  ${SICKBEARD_HOST};
 
         location / {
-            proxy_pass $web:${SICKBEARD_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${SICKBEARD_PORT};
         }
     }
 
@@ -61,7 +59,7 @@ http {
         server_name  ${COUCHPOTATO_HOST};
 
         location / {
-            proxy_pass $web:${COUCHPOTATO_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${COUCHPOTATO_PORT};
         }
     }
 
@@ -70,7 +68,7 @@ http {
         server_name  ${HEADPHONES_HOST};
 
         location / {
-            proxy_pass $web:${HEADPHONES_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${HEADPHONES_PORT};
         }
     }
 
@@ -79,7 +77,7 @@ http {
         server_name  ${DELUGE_HOST};
 
         location / {
-            proxy_pass $web:${DELUGE_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${DELUGE_PORT};
         }
     }
 
@@ -88,7 +86,7 @@ http {
         server_name  ${SYNOLOGY_HOST};
 
         location / {
-            proxy_pass $web:${SYNOLOGY_PORT};
+            proxy_pass http://${SYNOLOGY_INTERNAL_HOST}:${SYNOLOGY_PORT};
         }
     }
 }
