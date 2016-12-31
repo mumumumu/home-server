@@ -1,5 +1,21 @@
 version: "2.1"
 services:
+  sickbeard:
+    build:
+      context: ./automation/sickbeard
+    container_name: sickbeard
+    image: sickbeard:latest
+    environment:
+      - TZ=America/New_York
+      - PGID=0
+      - PUID=0
+    volumes:
+      - /opt/sickbeard:/config
+      - /media/tv/#temp:/tv-download-dir
+      - /media/tv:/tv
+      - /media/tv/#seeding:/torrent-black-hole
+    ports:
+      - "8081:8081"
   nginx:
     build:
       context: ./automation/nginx
@@ -26,6 +42,8 @@ services:
       - WEB_INTERNAL_HOST
     volumes:
       - ./automation/certs:/etc/nginx/certs:ro
+    links:
+      - sickbeard
     ports:
       - "80:${HTTP_PORT}"
       - "443:${HTTPS_PORT}"
