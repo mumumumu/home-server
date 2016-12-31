@@ -1,21 +1,18 @@
 version: "2.1"
 services:
-  sickbeard:
-    build:
-      context: ./automation/sickbeard
-    container_name: sickbeard
-    image: sickbeard:latest
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: always
     environment:
-      - TZ=America/New_York
-      - PGID=0
-      - PUID=0
+      - PUID
+      - PGID
     volumes:
-      - /opt/sickbeard:/config
-      - /media/tv/#temp:/tv-download-dir
+      - /dev/rtc:/dev/rtc:ro
+      - /opt/sonarr:/config
       - /media/tv:/tv
-      - /media/tv/#seeding:/torrent-black-hole
     ports:
-      - "8081:8081"
+      - "8989:${SONARR_PORT}"
   nginx:
     build:
       context: ./automation/nginx
@@ -32,8 +29,8 @@ services:
       - HEADPHONES_PORT
       - HTTPS_PORT
       - HTTP_PORT
-      - SICKBEARD_PORT
-      - SICKBEARD_HOST
+      - SONARR_PORT
+      - SONARR_HOST
       - SSL_CERTIFICATE
       - SSL_CERTIFICATE_KEY
       - SYNOLOGY_HOST
@@ -43,7 +40,7 @@ services:
     volumes:
       - ./automation/certs:/etc/nginx/certs:ro
     links:
-      - sickbeard
+      - sonarr
     ports:
       - "80:${HTTP_PORT}"
       - "443:${HTTPS_PORT}"

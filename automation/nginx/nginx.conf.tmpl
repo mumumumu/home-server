@@ -47,10 +47,10 @@ http {
 
     server {
         listen       ${HTTPS_PORT} ssl;
-        server_name  ${SICKBEARD_HOST};
+        server_name  ${SONARR_HOST};
 
         location / {
-            proxy_pass http://${WEB_INTERNAL_HOST}:${SICKBEARD_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${SONARR_PORT};
         }
     }
 
