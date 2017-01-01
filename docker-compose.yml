@@ -12,7 +12,20 @@ services:
       - /opt/sonarr:/config
       - /media/tv:/tv
     ports:
-      - "8989:${SONARR_PORT}"
+      - "8989:${TV_PORT}"
+  deluge:
+    image: linuxserver/deluge:latest
+    container_name: deluge
+    restart: always
+    network_mode: host
+    environment:
+      - PUID
+      - PGID
+      - TZ=America/New_York
+    volumes:
+      - /media:/downloads
+      - /media:/media
+      - /opt/deluge:/config
   nginx:
     build:
       context: ./automation/nginx
@@ -20,22 +33,22 @@ services:
     image: nginx:latest
     environment:
       - ALLOWED_HOSTS
-      - COUCHPOTATO_HOST
-      - COUCHPOTATO_PORT
-      - DELUGE_HOST
-      - DELUGE_PORT
       - GHOST_PORT
-      - HEADPHONES_HOST
-      - HEADPHONES_PORT
       - HTTPS_PORT
       - HTTP_PORT
-      - SONARR_PORT
-      - SONARR_HOST
+      - MOVIE_HOST
+      - MOVIE_PORT
+      - MUSIC_HOST
+      - MUSIC_PORT
       - SSL_CERTIFICATE
       - SSL_CERTIFICATE_KEY
       - SYNOLOGY_HOST
       - SYNOLOGY_INTERNAL_HOST
       - SYNOLOGY_PORT
+      - TORRENT_HOST
+      - TORRENT_PORT
+      - TV_HOST
+      - TV_PORT
       - WEB_INTERNAL_HOST
     volumes:
       - ./automation/certs:/etc/nginx/certs:ro

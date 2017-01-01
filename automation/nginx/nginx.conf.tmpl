@@ -43,41 +43,61 @@ http {
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${GHOST_PORT};
         }
-    }
 
-    server {
-        listen       ${HTTPS_PORT} ssl;
-        server_name  ${SONARR_HOST};
-
-        location / {
-            proxy_pass http://${WEB_INTERNAL_HOST}:${SONARR_PORT};
+        location /.well-known {
+            allow all;
         }
     }
 
     server {
         listen       ${HTTPS_PORT} ssl;
-        server_name  ${COUCHPOTATO_HOST};
+        server_name  ${TV_HOST};
 
         location / {
-            proxy_pass http://${WEB_INTERNAL_HOST}:${COUCHPOTATO_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${TV_PORT};
+        }
+
+        location /.well-known {
+            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 
     server {
         listen       ${HTTPS_PORT} ssl;
-        server_name  ${HEADPHONES_HOST};
+        server_name  ${MOVIE_HOST};
 
         location / {
-            proxy_pass http://${WEB_INTERNAL_HOST}:${HEADPHONES_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${MOVIE_PORT};
+        }
+
+        location /.well-known {
+            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 
     server {
         listen       ${HTTPS_PORT} ssl;
-        server_name  ${DELUGE_HOST};
+        server_name  ${MUSIC_HOST};
 
         location / {
-            proxy_pass http://${WEB_INTERNAL_HOST}:${DELUGE_PORT};
+            proxy_pass http://${WEB_INTERNAL_HOST}:${MUSIC_PORT};
+        }
+
+        location /.well-known {
+            return 301 https://${ALLOWED_HOSTS}$request_uri;
+        }
+    }
+
+    server {
+        listen       ${HTTPS_PORT} ssl;
+        server_name  ${TORRENT_HOST};
+
+        location / {
+            proxy_pass http://${WEB_INTERNAL_HOST}:${TORRENT_PORT};
+        }
+
+        location /.well-known {
+            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 
@@ -87,6 +107,10 @@ http {
 
         location / {
             proxy_pass http://${SYNOLOGY_INTERNAL_HOST}:${SYNOLOGY_PORT};
+        }
+
+        location /.well-known {
+            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 }
