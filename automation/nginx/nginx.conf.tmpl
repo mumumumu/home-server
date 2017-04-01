@@ -45,7 +45,7 @@ http {
         }
 
         location /.well-known {
-            allow all;
+            alias /etc/nginx/certs/html/.well-known;
         }
     }
 
