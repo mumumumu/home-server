@@ -13,6 +13,18 @@ services:
       - /media/tv:/tv
     ports:
       - "8989:${TV_PORT}"
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    restart: always
+    environment:
+      - PUID
+      - PGID
+    volumes:
+      - /opt/radarr:/config
+      - /media/muvis:/movies
+    ports:
+      - "7878:${MOVIE_PORT}"
   deluge:
     image: linuxserver/deluge:latest
     container_name: deluge
@@ -55,6 +67,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     links:
       - sonarr
+      - radarr
     ports:
       - "80:${HTTP_PORT}"
       - "443:${HTTPS_PORT}"
