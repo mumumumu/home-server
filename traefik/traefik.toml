@@ -1,0 +1,55 @@
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+      # temporary static certs until have access to namecheap API
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/certs/muru.io.crt"
+      keyFile = "/certs/muru.io.key"
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "muru.io"
+watch = true
+exposedByDefault = false
+
+#[acme]
+#email = "smartmu@gmail.com"
+#storage = "acme.json"
+#entryPoint = "https"
+#  [acme.dnsChallenge]
+#  provider = "namecheap"
+#  [[acme.domains]]
+#  main = "*.muru.io"
+
+[file]
+[backends]
+  [backends.backend-nas]
+    [backends.backend-nas.servers]
+      [backends.backend-nas.servers.server0]
+        url = "http://192.168.1.200:5000"
+        weight = 0
+    [backends.backend-torrent.servers]
+  [backends.backend-torrent]
+      [backends.backend-torrent.servers.server0]
+        url = "http://192.168.1.100:8112"
+        weight = 0
+[frontends]
+  [frontends.frontend-nas]
+  backend = "backend-nas"
+  passHostHeader = true
+    [frontends.frontend-nas.routes]
+      [frontends.frontend-nas.routes.route0]
+        rule = "Host:disk.muru.io"
+  [frontends.frontend-torrent]
+  backend = "backend-torrent"
+  passHostHeader = true
+    [frontends.frontend-torrent.routes]
+      [frontends.frontend-torrent.routes.route0]
+        rule = "Host:trnt.muru.io"

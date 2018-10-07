@@ -1,76 +1,80 @@
-version: "2.1"
+version: "3.7"
+x-common-env-vars: &common-env-vars
+  PGID: 0
+  PUID: 0
+  TZ: America/New_York
+
 services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - NAMECHEAP_API_USER
+      - NAMECHEAP_API_KEY
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.toml:/traefik.toml
+      - ./traefik/acme.json:/acme.json
+      - ./certs:/certs:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - 80:80
+      - 443:443
+
   sonarr:
     image: linuxserver/sonarr:latest
     container_name: sonarr
-    restart: always
+    restart: unless-stopped
     environment:
-      - PUID
-      - PGID
+      <<: *common-env-vars
     volumes:
-      - /dev/rtc:/dev/rtc:ro
       - /opt/sonarr:/config
       - /media/tv:/tv
       - /media/animu:/animu
-    ports:
-      - "8989:${TV_PORT}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=8989"
+      - "traefik.frontend.rule=Host:tv.muru.io"
+
   radarr:
     image: linuxserver/radarr:latest
     container_name: radarr
-    restart: always
+    restart: unless-stopped
     environment:
-      - PUID
-      - PGID
+      <<: *common-env-vars
     volumes:
       - /opt/radarr:/config
       - /media/muvis:/movies
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=7878"
+      - "traefik.frontend.rule=Host:muvi.muru.io"
+
+  tautulli:
+    image: linuxserver/tautulli:latest
+    container_name: tautulli
+    restart: unless-stopped
+    environment:
+      <<: *common-env-vars
     ports:
-      - "7878:${MOVIE_PORT}"
+      - "8181:8181"
+    volumes:
+      - /opt/tautulli:/config
+      - /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Sever/Logs/:/logs:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=8181"
+      - "traefik.frontend.rule=Host:plexpy.muru.io"
+
   deluge:
     image: linuxserver/deluge:latest
     container_name: deluge
-    restart: always
+    restart: unless-stopped
     network_mode: host
     environment:
-      - PUID
-      - PGID
-      - TZ=America/New_York
+      <<: *common-env-vars
     volumes:
+      - /opt/deluge:/config
       - /media:/downloads
       - /media:/media
-      - /opt/deluge:/config
-  nginx:
-    build:
-      context: ./automation/nginx
-    container_name: nginx
-    image: nginx:latest
-    environment:
-      - ALLOWED_HOSTS
-      - GHOST_PORT
-      - HTTPS_PORT
-      - HTTP_PORT
-      - MOVIE_HOST
-      - MOVIE_PORT
-      - MUSIC_HOST
-      - MUSIC_PORT
-      - PLEXPY_HOST
-      - PLEXPY_PORT
-      - SSL_CERTIFICATE
-      - SSL_CERTIFICATE_KEY
-      - SYNOLOGY_HOST
-      - SYNOLOGY_INTERNAL_HOST
-      - SYNOLOGY_PORT
-      - TORRENT_HOST
-      - TORRENT_PORT
-      - TV_HOST
-      - TV_PORT
-      - WEB_INTERNAL_HOST
-    volumes:
-      - ./automation/certs:/etc/nginx/certs:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    links:
-      - sonarr
-      - radarr
-    ports:
-      - "80:${HTTP_PORT}"
-      - "443:${HTTPS_PORT}"
