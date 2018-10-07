@@ -9,6 +9,8 @@ envsubst "\
   \$MOVIE_PORT \
   \$MUSIC_HOST \
   \$MUSIC_PORT \
+  \$PLEXPY_HOST \
+  \$PLEXPY_PORT \
   \$SSL_CERTIFICATE \
   \$SSL_CERTIFICATE_KEY \
   \$SYNOLOGY_HOST \

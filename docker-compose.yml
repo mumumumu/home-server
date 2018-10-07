@@ -11,6 +11,7 @@ services:
       - /dev/rtc:/dev/rtc:ro
       - /opt/sonarr:/config
       - /media/tv:/tv
+      - /media/animu:/animu
     ports:
       - "8989:${TV_PORT}"
   radarr:
@@ -52,6 +53,8 @@ services:
       - MOVIE_PORT
       - MUSIC_HOST
       - MUSIC_PORT
+      - PLEXPY_HOST
+      - PLEXPY_PORT
       - SSL_CERTIFICATE
       - SSL_CERTIFICATE_KEY
       - SYNOLOGY_HOST

@@ -33,7 +33,14 @@ http {
 
     server {
         listen       ${HTTP_PORT};
-        return 301 https://$host$request_uri;
+
+        location /.well-known {
+            alias /etc/nginx/certs/html/.well-known;
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
     }
 
     server {
@@ -42,10 +49,6 @@ http {
 
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${GHOST_PORT};
-        }
-
-        location /.well-known {
-            alias /etc/nginx/certs/html/.well-known;
         }
     }
 
@@ -56,10 +59,6 @@ http {
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${TV_PORT};
         }
-
-        location /.well-known {
-            return 301 https://${ALLOWED_HOSTS}$request_uri;
-        }
     }
 
     server {
@@ -68,10 +67,6 @@ http {
 
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${MOVIE_PORT};
-        }
-
-        location /.well-known {
-            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 
@@ -82,10 +77,6 @@ http {
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${MUSIC_PORT};
         }
-
-        location /.well-known {
-            return 301 https://${ALLOWED_HOSTS}$request_uri;
-        }
     }
 
     server {
@@ -94,10 +85,6 @@ http {
 
         location / {
             proxy_pass http://${WEB_INTERNAL_HOST}:${TORRENT_PORT};
-        }
-
-        location /.well-known {
-            return 301 https://${ALLOWED_HOSTS}$request_uri;
         }
     }
 
@@ -108,9 +95,14 @@ http {
         location / {
             proxy_pass http://${SYNOLOGY_INTERNAL_HOST}:${SYNOLOGY_PORT};
         }
+    }
 
-        location /.well-known {
-            return 301 https://${ALLOWED_HOSTS}$request_uri;
+    server {
+        listen       ${HTTPS_PORT} ssl;
+        server_name  ${PLEXPY_HOST};
+
+        location / {
+            proxy_pass http://${WEB_INTERNAL_HOST}:${PLEXPY_PORT};
         }
     }
 }
