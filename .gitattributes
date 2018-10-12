@@ -1,3 +1,4 @@
 #pattern  filter=crypt diff=crypt
 certs/*  filter=crypt diff=crypt
 envs/*  filter=crypt diff=crypt
+traefik/acme.json  filter=crypt diff=crypt
